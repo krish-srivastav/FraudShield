@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FraudAuditService {
 
     private final ExecutorService executor =
-            Executors.newSingleThreadExecutor();
+            Executors.newFixedThreadPool(3);
 
     private final AtomicInteger auditCount = new AtomicInteger(0);
 
@@ -36,4 +36,5 @@ public class FraudAuditService {
         return auditCount.get();
     }
 }
+
 

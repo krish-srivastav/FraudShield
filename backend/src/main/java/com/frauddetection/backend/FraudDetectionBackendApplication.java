@@ -1,3 +1,4 @@
+
 package com.frauddetection.backend;
 
 import org.springframework.boot.SpringApplication;
