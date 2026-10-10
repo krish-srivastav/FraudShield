@@ -7,6 +7,8 @@ import com.frauddetection.backend.service.FraudAuditService;
 import com.frauddetection.backend.repository.TransactionRepository;
 
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public class TransactionController {
 
     @PostMapping("/check")
     public Map<String, Object> checkTransaction(
-            @RequestBody Transaction transaction) {
+            @Valid @RequestBody Transaction transaction) {
 
         boolean suspicious = fraudDetector.isSuspicious(transaction);
         String status = suspicious ? "SUSPICIOUS" : "SAFE";
@@ -56,4 +58,3 @@ public class TransactionController {
         return transactionRepository.findAll();
     }
 }
-
