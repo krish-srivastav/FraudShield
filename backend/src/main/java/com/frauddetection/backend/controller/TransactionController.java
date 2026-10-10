@@ -3,6 +3,7 @@ package com.frauddetection.backend.controller;
 
 import com.frauddetection.backend.model.Transaction;
 import com.frauddetection.backend.service.FraudDetector;
+import com.frauddetection.backend.service.FraudAuditService;
 import com.frauddetection.backend.repository.TransactionRepository;
 
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,15 @@ public class TransactionController {
 
     private final FraudDetector fraudDetector;
     private final TransactionRepository transactionRepository;
+    private final FraudAuditService fraudAuditService;
 
     public TransactionController(
             FraudDetector fraudDetector,
-            TransactionRepository transactionRepository) {
+            TransactionRepository transactionRepository,
+            FraudAuditService fraudAuditService) {
         this.fraudDetector = fraudDetector;
         this.transactionRepository = transactionRepository;
+        this.fraudAuditService = fraudAuditService;
     }
 
     @PostMapping("/check")
@@ -31,6 +35,9 @@ public class TransactionController {
         String status = suspicious ? "SUSPICIOUS" : "SAFE";
 
         long id = transactionRepository.save(transaction, status);
+
+        // Run the audit task in a background thread.
+        fraudAuditService.auditTransaction(id, status);
 
         return Map.of(
                 "id", id,
@@ -49,3 +56,4 @@ public class TransactionController {
         return transactionRepository.findAll();
     }
 }
+
